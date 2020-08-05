@@ -7,7 +7,7 @@
                         <h3 class="card-title">Users Table</h3>
 
                         <div class="card-tools">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#addNew">
+                            <button class="btn btn-success" @click = "newModal"> Add New
                                 <i class="fa fa-user-plus"></i>
                             </button>
                         </div>
@@ -35,11 +35,11 @@
 
                                     <td>
 
-                                        <a href="#">
+                                        <a href="#" @click="editModal(user)">
                                             <i class="fa fa-edit blue"></i>
                                         </a>
 
-                                        <a href="#">
+                                        <a href="#" @click="deleteUser(user.id)">
                                             <i class="fa fa-trash red"></i>
                                         </a>
 
@@ -60,13 +60,14 @@
             <div class="modal-dialog modal-dialog-ventered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addNew">Add New</h5>
+                        <h5 v-show="!editMode" class="modal-title" id="addNew">Add New</h5>
+                        <h5 v-show="editMode" class="modal-title" id="addNew">Edit User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
 
-                    <form @submit.prevent="createUser">
+                    <form @submit.prevent="editMode ? updateUser() : createUser() ">
 
                         <div class="modal-body">
 
@@ -118,7 +119,8 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
+                            <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
                         </div>
 
                     </form>
@@ -126,6 +128,7 @@
                 </div>
             </div>
         </div>
+
 
 
     </div>
@@ -137,10 +140,10 @@
         data() {
             return {
 
-
-
+                editMode : false,
                 users : {},
                 form: new Form({
+                    id : '',
                     name: '',
                     email: '',
                     password: '',
@@ -154,6 +157,87 @@
 
         methods: {
 
+            updateUser() {
+
+                this.$Progress.start();
+
+                this.form.put('api/user/'+this.form.id)
+                .then( () => {
+
+                    $('#addNew').modal('hide');
+
+                    swal.fire(
+                    'Updated!',
+                    'User has been updated.',
+                    'success'
+                    )
+
+                    this.$Progress.finish();
+
+
+
+                    Fire.$emit('AfterCreate');
+
+
+                })
+                .catch( () => {
+                    this.$Progress.fail();
+
+                });
+
+            },
+
+            editModal(user){
+
+                this.editMode = true;
+                this.form.reset();
+                $('#addNew').modal('show');
+                this.form.fill(user);
+
+            },
+
+            newModal(){
+
+                this.editMode = false;
+
+                this.form.reset();
+                $('#addNew').modal('show');
+
+            },
+
+            deleteUser(id){
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+
+
+                    //Send Request to the server
+                    if(result.value) {
+                        this.form.delete('api/user/'+id).then( () => {
+
+                            swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                            )
+
+                            Fire.$emit('AfterCreate');
+
+
+                            }).catch( () => {
+                                swal("Failed!", "There was something wrong. ", "warning");
+                            });
+                    }
+
+                })
+            },
+
             loadUsers() {
                 axios.get("api/user").then(( { data } ) => (this.users = data.data) );
             },
@@ -161,14 +245,24 @@
             createUser() {
 
                 this.$Progress.start();
-                this.form.post('api/user');
+                this.form.post('api/user')
+                .then(() => {
 
-                $('#addNew').modal('hide');
+                    Fire.$emit('AfterCreate');
 
-                toast.fire({
-                    icon: 'success',
-                    title: 'User Created Successfully'
+                    $('#addNew').modal('hide');
+
+                    toast.fire({
+                        icon: 'success',
+                        title: 'User Created Successfully'
+                    });
+
+
+                })
+                .catch(() => {
+
                 });
+
 
 
                 this.$Progress.finish();
@@ -180,6 +274,10 @@
 
         created() {
             this.loadUsers();
+            // setInterval( () => this.loadUsers() , 3000);
+            Fire.$on('AfterCreate', () => {
+                this.loadUsers();
+            });
         }
     }
 
