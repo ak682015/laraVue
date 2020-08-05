@@ -10,6 +10,23 @@ window.Vue = require('vue');
 
 import moment from 'moment';
 import { Form, HasError, AlertError } from 'vform';
+import Swal from 'sweetalert2';
+
+window.swal = Swal;
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    onOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
+
+window.toast = Toast;
 
 window.Form = Form;
 Vue.component(HasError.name, HasError);
@@ -27,9 +44,9 @@ const options = {
     failedColor: '#874b4b',
     thickness: '5px',
     transition: {
-      speed: '0.2s',
+      speed: '0.05s',
       opacity: '0.6s',
-      termination: 300
+      termination: 600
     },
     autoRevert: true,
     location: 'top',

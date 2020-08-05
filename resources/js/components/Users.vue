@@ -137,6 +137,8 @@
         data() {
             return {
 
+
+
                 users : {},
                 form: new Form({
                     name: '',
@@ -157,9 +159,20 @@
             },
 
             createUser() {
+
                 this.$Progress.start();
                 this.form.post('api/user');
+
+                $('#addNew').modal('hide');
+
+                toast.fire({
+                    icon: 'success',
+                    title: 'User Created Successfully'
+                });
+
+
                 this.$Progress.finish();
+
 
             }
 
