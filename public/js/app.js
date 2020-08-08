@@ -2211,9 +2211,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$Progress.start();
       this.form.put('api/profile').then(function () {
         _this2.$Progress.finish();
-      })["catch"](function () {
-        _this2.$Progress.fail();
-      });
+      })["catch"](function () {});
     }
   },
   created: function created() {
