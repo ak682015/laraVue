@@ -63,6 +63,7 @@ let routes = [
     { path: '/developer', component: require('./components/Developer.vue').default },
     { path: '/users', component: require('./components/Users.vue').default },
     { path: '/profile', component: require('./components/Profile.vue').default },
+    { path: '/test', component: require('./components/Test.vue').default },
 
   ]
 

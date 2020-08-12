@@ -245,6 +245,7 @@
             createUser() {
 
                 this.$Progress.start();
+                
                 this.form.post('api/user')
                 .then(() => {
 
@@ -263,11 +264,7 @@
 
                 });
 
-
-
                 this.$Progress.finish();
-
-
             }
 
         },

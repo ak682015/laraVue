@@ -119,7 +119,7 @@
                                         v-model="form.password"
                                         class="form-control"
                                         id="password"
-                                        placeholder="Passport"
+                                        placeholder="Password   "
                                         :class="{ 'is-invalid': form.errors.has('password') }"
                                     >
                                      <has-error :form="form" field="password"></has-error>
@@ -144,7 +144,6 @@
 
             </div>
         </div>
-    </div>
 </template>
 
 <script>
@@ -175,8 +174,8 @@
                 // console.log(file);
                 let reader = new FileReader();
 
-
-                if(file['size' < 2111775])
+                console.log(file['size']);
+                if(file['size'] < 2111775)
                 {
                     reader.onloadend = (e) => {
                     // console.log('RESULT', reader.result)
