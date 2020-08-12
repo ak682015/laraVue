@@ -23,7 +23,7 @@
                     <h5 class="widget-user-desc">User</h5>
                 </div>
                 <div class="widget-user-image">
-                    <img class="img-circle" alt="User Avatar">
+                    <img class="img-circle" :src="getProfilePhoto()"  alt="User Avatar">
                 </div>
                 <div class="card-footer">
                     <div class="row">
@@ -168,6 +168,13 @@
         },
 
         methods : {
+
+            getProfilePhoto() {
+
+                let photo = (this.form.photo.length > 200) ? this.form.photo : "img/profile/" + this.form.photo;
+                return photo;
+            },
+
             updateProfile(e){
 
                 let file = e.target.files[0];
@@ -201,7 +208,17 @@
                 this.$Progress.start();
                 this.form.put('api/profile')
                 .then( ()=> {
-                this.$Progress.finish();
+
+                    this.$Progress.finish();
+
+                    swal.fire(
+                    'Updated!',
+                    'Your Profile has been Updated.',
+                    'success'
+                    )
+
+                    FIre.$emit('AfterCreate');
+
 
 
                 })
